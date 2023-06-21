@@ -1,26 +1,22 @@
 /* Tarea de programacion web, creada por Liam Marcos Jimenez Perez */
 
-/* Para escuchar cuando carga el documento */
-window.addEventListener('load', ()=> {  
-
-/* Constantes y guardado de los elementos necesarios */    
+window.addEventListener('load', () => {
     const display = document.querySelector('.calculator-display');
     const keypadButtons = document.getElementsByClassName('keypad-button');
-
-/* Crear otra constante para convertir el HTMLCollection a Array */    
     const keypadButtonsArray = Array.from(keypadButtons);
 
-/* Iteramos por nuestro nuevo Array de botones */
-    keypadButtonsArray.forEach( (button) => {
-
-/* A cada boton se le agrega un Listener */           
-        button.addEventListener('click', ()=> {
-            calculadora(button, display);
-        })
-    })
+    keypadButtonsArray.forEach((button) => {
+        button.addEventListener('click', () => {
+            if (button.innerHTML === 'R') {
+                mostrarUltimaOperacion(display);
+            } else {
+                calculadora(button, display);
+            }
+        });
+    });
 });
 
-function calculadora (button, display) {
+function calculadora(button, display) {
     switch (button.innerHTML) {
         case 'C':
             borrar(display);
@@ -28,28 +24,44 @@ function calculadora (button, display) {
 
         case '=':
             calcular(display);
-            break;    
+            break;
 
         default:
             actualizar(display, button);
-            break;    
+            break;
     }
 }
 
 function calcular(display) {
-    /* Tomar el string, resolverlo y guardarlo en el innerHTML del display */
-    display.innerHTML = eval(display.innerHTML) 
+    display.innerHTML = eval(display.innerHTML);
+    guardarOperacion(display.innerHTML); // Guardar la operación en el localStorage
 }
 
-function actualizar (display, button) {
+function actualizar(display, button) {
     if (display.innerHTML == 0) {
-        display.innerHTML = ''
+        display.innerHTML = '';
     }
     display.innerHTML += button.innerHTML;
-
 }
 
-function borrar (display) {
+function borrar(display) {
     display.innerHTML = 0;
+}
+
+function guardarOperacion(operacion) {
+    // Guardar la nueva operación como la última en el localStorage
+    localStorage.setItem('ultimaOperacion', operacion);
+}
+
+function mostrarUltimaOperacion(display) {
+    // Obtener la última operación guardada del localStorage
+    const ultimaOperacionGuardada = localStorage.getItem('ultimaOperacion');
+
+    // Mostrar la última operación en el display y borrar el contenido actual
+    if (ultimaOperacionGuardada) {
+        display.innerHTML = ultimaOperacionGuardada;
+    } else {
+        display.innerHTML = 'No hay operación guardada.';
+    }
 }
 
